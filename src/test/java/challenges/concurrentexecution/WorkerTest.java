@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 
 public class WorkerTest
 {
-
     private static final long DEFAULT_TIMEOUT = Duration.ofSeconds(10).toMillis();
 
     private TaskFactory factory;

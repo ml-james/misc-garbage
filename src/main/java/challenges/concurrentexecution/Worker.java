@@ -27,7 +27,8 @@ public class Worker
         }
     }
 
-    public ExecutedTasks execute(Collection<Runnable> actions, long timeoutMillis) throws InterruptedException {
+    public ExecutedTasks execute(Collection<Runnable> actions, long timeoutMillis) throws InterruptedException
+    {
         long startTime = System.currentTimeMillis();
 
         ExecutorService executorService = new ThreadPoolExecutor(actions.size(), actions.size(), timeoutMillis,
