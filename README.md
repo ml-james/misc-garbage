@@ -1,0 +1,3 @@
+### a miscellany of garbage ...
+
+* concurrentexecution : https://www.codewars.com/kata/5b34ca5791c746079c000067
