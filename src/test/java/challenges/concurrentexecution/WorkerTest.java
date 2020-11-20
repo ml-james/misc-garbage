@@ -1,7 +1,7 @@
 package challenges.concurrentexecution;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -9,8 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WorkerTest
 {
@@ -19,7 +19,7 @@ public class WorkerTest
     private TaskFactory factory;
     private Worker worker;
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         factory = new TaskFactory();
@@ -90,8 +90,8 @@ public class WorkerTest
         expectedSuccess.add(factory.createSuccessfulTask());
         expectedSuccess.add(factory.createSuccessfulTask());
 
-        tasks.add(expectedSuccess.get(1));
         tasks.add(expectedSuccess.get(0));
+        tasks.add(expectedSuccess.get(1));
 
         Set<Runnable> expectedFailed = new HashSet<>();
         expectedFailed.add(factory.createFailingTask(200));
@@ -124,11 +124,7 @@ public class WorkerTest
         assertEquals(tasks, result.successful);
         assertTrue(result.failed.isEmpty());
         assertTrue(result.timedOut.isEmpty());
-        String message = String.format("Execution time significantly exceeded time necessary for "
-                        + "execution of all tasks. "
-                        + "Execution took %dms, while %dms is more than enough.",
-                elapsed, timeLimit);
 
-        assertTrue(message, elapsed <= timeLimit);
+        assertTrue(elapsed <= timeLimit);
     }
 }

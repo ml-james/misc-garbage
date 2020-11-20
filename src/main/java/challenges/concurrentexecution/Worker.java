@@ -1,7 +1,11 @@
 package challenges.concurrentexecution;
 
+import org.awaitility.Awaitility;
+
 import java.util.*;
 import java.util.concurrent.*;
+
+import static org.awaitility.Awaitility.*;
 
 public class Worker
 {
@@ -35,41 +39,28 @@ public class Worker
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
         HashMap<Runnable, Future<?>> runnableResults = new HashMap<>();
-        for (Runnable action : actions)
-        {
+        for (Runnable action : actions) {
             Future<?> future = executorService.submit(action);
             runnableResults.put(action, future);
         }
 
+        await().until(() -> runnableResults.values().stream().allMatch(Future::isDone) ||
+                timeoutMillis < System.currentTimeMillis() - startTime);
+
         ExecutedTasks result = new ExecutedTasks();
-        while (true)
-        {
-            if (runnableResults.values().stream().allMatch(Future::isDone) ||
-                    timeoutMillis < System.currentTimeMillis() - startTime)
-            {
-                for (Map.Entry<Runnable, Future<?>> runnableResult : runnableResults.entrySet())
-                {
-                    try
-                    {
-                        if (runnableResult.getValue().isDone())
-                        {
-                            runnableResult.getValue().get();
-                            result.addSuccessful(runnableResult.getKey());
-                        }
-                        else
-                        {
-                            result.addTimedOut(runnableResult.getKey());
-                        }
-                    }
-                    catch (ExecutionException ee)
-                    {
-                        result.addFailed(runnableResult.getKey());
-                    }
+        for (Map.Entry<Runnable, Future<?>> runnableResult : runnableResults.entrySet()) {
+            try {
+                if (runnableResult.getValue().isDone()) {
+                    runnableResult.getValue().get();
+                    result.addSuccessful(runnableResult.getKey());
+                } else {
+                    result.addTimedOut(runnableResult.getKey());
                 }
-                executorService.shutdown();
-                break;
+            } catch (ExecutionException ee) {
+                result.addFailed(runnableResult.getKey());
             }
         }
+        executorService.shutdown();
         return result;
     }
 }
