@@ -1,11 +1,9 @@
 package challenges.concurrentexecution;
 
-import org.awaitility.Awaitility;
-
 import java.util.*;
 import java.util.concurrent.*;
 
-import static org.awaitility.Awaitility.*;
+import static org.awaitility.Awaitility.await;
 
 public class Worker
 {
@@ -39,7 +37,8 @@ public class Worker
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
         HashMap<Runnable, Future<?>> runnableResults = new HashMap<>();
-        for (Runnable action : actions) {
+        for (Runnable action : actions)
+        {
             Future<?> future = executorService.submit(action);
             runnableResults.put(action, future);
         }
@@ -48,15 +47,22 @@ public class Worker
                 timeoutMillis < System.currentTimeMillis() - startTime);
 
         ExecutedTasks result = new ExecutedTasks();
-        for (Map.Entry<Runnable, Future<?>> runnableResult : runnableResults.entrySet()) {
-            try {
-                if (runnableResult.getValue().isDone()) {
+        for (Map.Entry<Runnable, Future<?>> runnableResult : runnableResults.entrySet())
+        {
+            try
+            {
+                if (runnableResult.getValue().isDone())
+                {
                     runnableResult.getValue().get();
                     result.addSuccessful(runnableResult.getKey());
-                } else {
+                }
+                else
+                {
                     result.addTimedOut(runnableResult.getKey());
                 }
-            } catch (ExecutionException ee) {
+            }
+            catch (ExecutionException ee)
+            {
                 result.addFailed(runnableResult.getKey());
             }
         }
