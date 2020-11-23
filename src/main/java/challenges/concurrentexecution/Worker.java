@@ -2,8 +2,7 @@ package challenges.concurrentexecution;
 
 import java.util.*;
 import java.util.concurrent.*;
-
-import static org.awaitility.Awaitility.await;
+import java.util.stream.Collectors;
 
 public class Worker
 {
@@ -13,9 +12,9 @@ public class Worker
         public Set<Runnable> failed = new HashSet<>();
         public Set<Runnable> timedOut = new HashSet<>();
 
-        public void addSuccessful(final Runnable runnable)
+        public void addAllSuccessful(final List<Runnable> runnables)
         {
-            successful.add(runnable);
+            successful.addAll(runnables);
         }
 
         public void addFailed(final Runnable runnable)
@@ -31,30 +30,44 @@ public class Worker
 
     public ExecutedTasks execute(Collection<Runnable> actions, long timeoutMillis) throws InterruptedException
     {
-        long startTime = System.currentTimeMillis();
+        final CountDownLatch countDownLatch = new CountDownLatch(actions.size());
 
         ExecutorService executorService = new ThreadPoolExecutor(actions.size(), actions.size(), timeoutMillis,
                 TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
-        HashMap<Runnable, Future<?>> runnableResults = new HashMap<>();
+        HashMap<Runnable, Future<Long>> runnableResults = new HashMap<>();
         for (Runnable action : actions)
         {
-            Future<?> future = executorService.submit(action);
+            Callable<Long> callable = () ->
+            {
+                try
+                {
+                    long scopedStartTime = System.currentTimeMillis();
+                    action.run();
+                    long scopedEndTime = System.currentTimeMillis();
+                    return (Long) (scopedEndTime - scopedStartTime);
+                }
+                finally
+                {
+                    countDownLatch.countDown();
+                }
+            };
+            Future<Long> future = executorService.submit(callable);
             runnableResults.put(action, future);
         }
 
-        await().until(() -> runnableResults.values().stream().allMatch(Future::isDone) ||
-                timeoutMillis < System.currentTimeMillis() - startTime);
+        countDownLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
 
         ExecutedTasks result = new ExecutedTasks();
-        for (Map.Entry<Runnable, Future<?>> runnableResult : runnableResults.entrySet())
+        List<SuccessfulRun> successfulRuns = new ArrayList<>();
+        for (Map.Entry<Runnable, Future<Long>> runnableResult : runnableResults.entrySet())
         {
             try
             {
                 if (runnableResult.getValue().isDone())
                 {
-                    runnableResult.getValue().get();
-                    result.addSuccessful(runnableResult.getKey());
+                    Long timeTaken = runnableResult.getValue().get();
+                    successfulRuns.add(new SuccessfulRun(runnableResult.getKey(), timeTaken));
                 }
                 else
                 {
@@ -66,7 +79,20 @@ public class Worker
                 result.addFailed(runnableResult.getKey());
             }
         }
+        result.addAllSuccessful(successfulRuns.stream().sorted(Comparator.comparing(x -> x.timeTaken)).map(x -> x.runnable).collect(Collectors.toList()));
         executorService.shutdown();
         return result;
+    }
+
+    private static class SuccessfulRun
+    {
+        private final Runnable runnable;
+        private final long timeTaken;
+
+        public SuccessfulRun(Runnable runnable, long timeTaken)
+        {
+            this.runnable = runnable;
+            this.timeTaken = timeTaken;
+        }
     }
 }

@@ -32,11 +32,11 @@ public class WorkerTest
         List<Runnable> tasks = new ArrayList<>();
         List<Runnable> expectedSuccess = new ArrayList<>();
 
-        expectedSuccess.add(factory.createSuccessfulTask());
-        expectedSuccess.add(factory.createSuccessfulTask());
+        expectedSuccess.add(factory.createSuccessfulTask(50));
+        expectedSuccess.add(factory.createSuccessfulTask(100));
 
-        tasks.add(expectedSuccess.get(0));
         tasks.add(expectedSuccess.get(1));
+        tasks.add(expectedSuccess.get(0));
 
         Worker.ExecutedTasks result = worker.execute(tasks, DEFAULT_TIMEOUT);
 
@@ -87,11 +87,11 @@ public class WorkerTest
         List<Runnable> tasks = new ArrayList<>();
 
         List<Runnable> expectedSuccess = new ArrayList<>();
-        expectedSuccess.add(factory.createSuccessfulTask());
-        expectedSuccess.add(factory.createSuccessfulTask());
+        expectedSuccess.add(factory.createSuccessfulTask(50));
+        expectedSuccess.add(factory.createSuccessfulTask(100));
 
-        tasks.add(expectedSuccess.get(0));
         tasks.add(expectedSuccess.get(1));
+        tasks.add(expectedSuccess.get(0));
 
         Set<Runnable> expectedFailed = new HashSet<>();
         expectedFailed.add(factory.createFailingTask(200));
@@ -114,7 +114,7 @@ public class WorkerTest
     public void testNoExcessiveWait() throws InterruptedException
     {
         List<Runnable> tasks = new ArrayList<>();
-        tasks.add(factory.createSuccessfulTask());
+        tasks.add(factory.createSuccessfulTask(50));
 
         int timeLimit = 700;
         long startTime = System.currentTimeMillis();

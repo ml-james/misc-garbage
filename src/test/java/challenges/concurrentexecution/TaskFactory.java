@@ -6,9 +6,20 @@ public class TaskFactory
 {
     private static final long DEFAULT_TIMEOUT = Duration.ofSeconds(10).toMillis();
 
-    public Runnable createSuccessfulTask()
+    public Runnable createSuccessfulTask(int succeedAfter)
     {
-        return new Thread(() -> System.out.println("Aha, a successful thread!"));
+        return new Thread(() ->
+        {
+            try
+            {
+                System.out.println("Aha, a successful thread!");
+                Thread.sleep(succeedAfter);
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        });
     }
 
     public Runnable createFailingTask(int failAfter)
