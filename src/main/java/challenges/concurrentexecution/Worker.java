@@ -79,8 +79,13 @@ public class Worker
                 result.addFailed(runnableResult.getKey());
             }
         }
-        result.addAllSuccessful(successfulRuns.stream().sorted(Comparator.comparing(x -> x.timeTaken)).map(x -> x.runnable).collect(Collectors.toList()));
+
+        result.addAllSuccessful(successfulRuns.stream()
+                .sorted(Comparator.comparing(x -> x.timeTaken))
+                .map(x -> x.runnable)
+                .collect(Collectors.toList()));
         executorService.shutdown();
+
         return result;
     }
 
