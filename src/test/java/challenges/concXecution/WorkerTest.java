@@ -1,4 +1,4 @@
-package challenges.concurrentexecution;
+package challenges.concXecution;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

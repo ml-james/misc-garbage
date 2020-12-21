@@ -1,4 +1,4 @@
-package challenges.concurrentexecution;
+package challenges.concXecution;
 
 public class FailException extends RuntimeException
 {

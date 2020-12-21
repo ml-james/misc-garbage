@@ -1,4 +1,4 @@
-package challenges.concurrentexecution;
+package challenges.concXecution;
 
 import java.time.Duration;
 

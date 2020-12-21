@@ -1,4 +1,4 @@
-package challenges.concurrentexecution;
+package challenges.concXecution;
 
 import java.util.*;
 import java.util.concurrent.*;
