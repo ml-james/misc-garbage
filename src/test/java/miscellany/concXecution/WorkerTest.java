@@ -1,4 +1,4 @@
-package challenges.concXecution;
+package miscellany.concXecution;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

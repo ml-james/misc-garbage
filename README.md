@@ -1,4 +1,4 @@
-### a miscellany of garbage ...
+### A miscellany of garbage ...
 
-* concXecution : https://www.codewars.com/kata/5b34ca5791c746079c000067
-* tdb_owling : http://butunclebob.com/files/downloads/Bowling%20Game%20Kata.ppt
+* concXecution : `Implement a Worker class, which given a set of tasks (implementations of Runnable interface in Java and custom Runnable class in C#) will execute them concurrently and return the summary of the execution with tasks categorized as successful, failed or timed out.`
+* jc5tress/jm-aitch: `COMING SOON...`
